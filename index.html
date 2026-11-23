@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Una seconda te per il tuo network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Layout: un racconto verticale a capitoli numerati, da scorrere mentre si parla. Tema unico chiaro, colori del brand. */
+  --blue: #237DFE;
+  --blue-deep: #0F4FC2;
+  --blue-tint: #EAF2FF;
+  --ink: #0B1220;
+  --muted: #5B6578;
+  --sleep: #B9C1CF;
+  --paper: #FFFFFF;
+  --line: #E3E8F1;
+  --display: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --body: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--body); font-size: 18px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: var(--display); line-height: 1.12; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2.2rem, 5.2vw, 3.9rem); font-weight: 700; }
+h2 { font-size: clamp(1.7rem, 3.6vw, 2.6rem); font-weight: 700; }
+h3 { font-size: 1.2rem; font-weight: 600; }
+p { margin: 0; }
+.wrap { width: min(1120px, 100% - 40px); margin-inline: auto; }
+.prose { max-width: 62ch; color: var(--muted); }
+.blue { color: var(--blue); }
+section { padding: 88px 0; border-top: 1px solid var(--line); }
+.chapter { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-weight: 600; font-size: .85rem; color: var(--blue); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 18px; }
+.chapter span { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--blue-tint); font-size: .85rem; letter-spacing: 0; }
+.stack { display: grid; gap: 20px; }
+
+/* top bar */
+.top { position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 58px; }
+.brand { font-family: var(--display); font-weight: 700; font-size: 1.05rem; }
+.brand b { color: var(--blue); }
+.nav { display: flex; gap: 4px; overflow-x: auto; }
+.nav a { font-size: .85rem; color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 999px; white-space: nowrap; }
+.nav a:hover, .nav a:focus-visible { background: var(--blue-tint); color: var(--blue-deep); outline: none; }
+@media (max-width: 820px) { .nav { display: none; } }
+
+/* hero */
+.hero { padding: 56px 0 72px; border-top: 0; }
+.hero-grid { display: grid; grid-template-columns: 1fr 1.05fr; gap: 48px; align-items: center; }
+@media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+.hero .lead { font-size: 1.2rem; color: var(--muted); max-width: 46ch; margin-top: 20px; }
+.net-card { background: var(--ink); border-radius: 24px; padding: 18px; color: #fff; }
+.net-card canvas { width: 100%; height: auto; aspect-ratio: 1 / 0.86; display: block; }
+.net-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 4px 6px 10px; }
+.toggle { display: inline-flex; background: rgba(255,255,255,.08); border-radius: 999px; padding: 4px; }
+.toggle button { font: 600 .9rem var(--display); color: #C9D3E6; background: transparent; border: 0; padding: 8px 16px; border-radius: 999px; cursor: pointer; }
+.toggle button[aria-pressed="true"] { background: var(--blue); color: #fff; }
+.toggle button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.net-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px 6px 4px; }
+.net-stats div { background: rgba(255,255,255,.06); border-radius: 14px; padding: 10px 12px; }
+.net-stats strong { display: block; font: 700 1.6rem var(--display); font-variant-numeric: tabular-nums; }
+.net-stats small { color: #A9B4C8; font-size: .8rem; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .8rem; color: #A9B4C8; padding: 6px 6px 0; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.note { font-size: .78rem; color: #8592A9; padding: 6px 6px 0; }
+
+/* cards */
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 40px; }
+@media (max-width: 860px) { .grid3 { grid-template-columns: 1fr; } }
+.card { border: 1px solid var(--line); border-radius: 20px; padding: 26px; background: #fff; display: grid; gap: 10px; align-content: start; }
+.card .num { font: 700 2.4rem var(--display); color: var(--blue); font-variant-numeric: tabular-nums; }
+.card p { color: var(--muted); }
+
+/* how it works */
+.how { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; margin-top: 40px; }
+@media (max-width: 900px) { .how { grid-template-columns: 1fr; } }
+.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 44px 1fr; gap: 14px; padding: 18px; border-radius: 18px; background: var(--blue-tint); }
+.steps li::before { counter-increment: s; content: counter(s); display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: #fff; font: 700 1.05rem var(--display); }
+.steps h3 { margin-bottom: 4px; }
+.steps p { color: var(--muted); font-size: 1rem; }
+
+/* chat mock */
+.phone { background: #DCE6F5; border-radius: 28px; padding: 14px; border: 1px solid var(--line); }
+.chat-top { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 18px; padding: 10px 14px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font: 700 1rem var(--display); flex: none; }
+.chat-top strong { display: block; font-size: .98rem; }
+.chat-top small { color: var(--muted); font-size: .8rem; }
+.chat { display: grid; gap: 10px; padding: 16px 4px 6px; min-height: 420px; align-content: start; }
+.msg { max-width: 84%; padding: 10px 14px; border-radius: 16px; font-size: .96rem; line-height: 1.45; box-shadow: 0 1px 1px rgba(11,18,32,.06); transition: opacity .45s ease, transform .45s ease; }
+.msg.them { background: #fff; justify-self: start; border-bottom-left-radius: 6px; }
+.msg.bot { background: var(--blue); color: #fff; justify-self: end; border-bottom-right-radius: 6px; }
+.msg .who { display: block; font-size: .75rem; font-weight: 700; margin-bottom: 2px; opacity: .8; }
+.msg.sys { justify-self: center; background: rgba(11,18,32,.07); color: var(--muted); font-size: .8rem; box-shadow: none; border-radius: 999px; }
+.voice { display: flex; align-items: center; gap: 10px; }
+.voice svg { flex: none; }
+.wave { display: flex; gap: 3px; align-items: center; height: 22px; }
+.wave i { width: 3px; border-radius: 2px; background: var(--blue); }
+.file { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.16); border-radius: 10px; padding: 8px 10px; margin-top: 8px; font-size: .85rem; }
+.chat.playing .msg.hide { opacity: 0; transform: translateY(8px); }
+.replay { margin-top: 10px; font: 600 .9rem var(--display); color: var(--blue-deep); background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.replay:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* gradual */
+.ramp { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 44px; position: relative; }
+@media (max-width: 860px) { .ramp { grid-template-columns: 1fr 1fr; gap: 18px 0; } }
+.ramp div { padding: 0 18px 0 0; }
+.ramp .bar { height: 8px; border-radius: 4px; background: var(--blue); margin-bottom: 16px; }
+.ramp h3 { margin-bottom: 6px; }
+.ramp p { color: var(--muted); font-size: 1rem; }
+.quote { margin-top: 40px; padding: 26px 30px; border-left: 4px solid var(--blue); background: var(--blue-tint); border-radius: 0 18px 18px 0; font: 600 1.25rem/1.4 var(--display); max-width: 60ch; }
+
+/* profiles */
+.profile { border-radius: 20px; padding: 26px; background: var(--ink); color: #fff; display: grid; gap: 12px; align-content: start; }
+.profile .tag { font: 600 .78rem var(--display); letter-spacing: .1em; text-transform: uppercase; color: #8FB8FF; }
+.profile p { color: #C3CCDC; font-size: 1rem; }
+.profile .turn { color: #fff; border-top: 1px solid rgba(255,255,255,.14); padding-top: 12px; }
+
+/* calculator */
+.calc { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 40px; }
+@media (max-width: 900px) { .calc { grid-template-columns: 1fr; } }
+.inputs { display: grid; gap: 22px; border: 1px solid var(--line); border-radius: 22px; padding: 28px; }
+.field label { display: flex; justify-content: space-between; gap: 12px; font-weight: 500; font-size: 1rem; }
+.field output { font: 700 1.05rem var(--display); color: var(--blue-deep); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.field small { display: block; color: var(--muted); font-size: .85rem; margin-top: 2px; }
+input[type=range] { width: 100%; margin-top: 10px; accent-color: var(--blue); height: 28px; }
+input[type=range]:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.results { background: var(--ink); color: #fff; border-radius: 22px; padding: 28px; display: grid; gap: 18px; align-content: start; }
+.big { font: 700 clamp(2.4rem, 5vw, 3.4rem) var(--display); font-variant-numeric: tabular-nums; line-height: 1; }
+.results .label { color: #A9B4C8; font-size: .9rem; margin-bottom: 6px; }
+.rgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.rgrid div { background: rgba(255,255,255,.06); border-radius: 14px; padding: 14px; }
+.rgrid strong { display: block; font: 700 1.5rem var(--display); font-variant-numeric: tabular-nums; }
+.rgrid small { color: #A9B4C8; font-size: .82rem; }
+.compare { display: grid; gap: 10px; }
+.crow { display: grid; grid-template-columns: 120px 1fr 90px; gap: 10px; align-items: center; font-size: .88rem; color: #C3CCDC; }
+.ctrack { height: 14px; background: rgba(255,255,255,.08); border-radius: 7px; overflow: hidden; }
+.cfill { height: 100%; border-radius: 7px; transition: width .5s ease; }
+.crow b { text-align: right; color: #fff; font-variant-numeric: tabular-nums; }
+.fine { font-size: .8rem; color: #8592A9; }
+
+/* price */
+.price { display: grid; grid-template-columns: 1.1fr .9fr; gap: 28px; margin-top: 40px; align-items: stretch; }
+@media (max-width: 900px) { .price { grid-template-columns: 1fr; } }
+.offer { border: 2px solid var(--blue); border-radius: 24px; padding: 32px; display: grid; gap: 22px; }
+.pline { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
+.pline:last-of-type { border-bottom: 0; padding-bottom: 0; }
+.pval { font: 700 2.6rem var(--display); font-variant-numeric: tabular-nums; }
+.pval small { font-size: 1rem; color: var(--muted); font-weight: 500; }
+.pline p { color: var(--muted); font-size: 1rem; max-width: 34ch; }
+.incl { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.incl li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; font-size: 1rem; }
+.incl svg { margin-top: 4px; }
+.perday { background: var(--blue-tint); border-radius: 24px; padding: 32px; display: grid; gap: 18px; align-content: start; }
+.perday div strong { display: block; font: 700 2rem var(--display); color: var(--blue-deep); font-variant-numeric: tabular-nums; }
+.perday div span { color: var(--muted); font-size: .95rem; }
+.deadline { margin-top: 28px; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; background: var(--blue); color: #fff; border-radius: 22px; padding: 24px 30px; }
+.deadline h3 { font-size: 1.35rem; }
+.deadline p { opacity: .9; font-size: 1rem; }
+.count { display: flex; gap: 10px; }
+.count div { background: rgba(255,255,255,.16); border-radius: 14px; padding: 10px 14px; text-align: center; min-width: 76px; }
+.count strong { display: block; font: 700 1.8rem var(--display); font-variant-numeric: tabular-nums; }
+.count small { font-size: .75rem; opacity: .9; }
+
+/* path */
+.path { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px; counter-reset: p; }
+@media (max-width: 860px) { .path { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .path { grid-template-columns: 1fr; } }
+.path div { border-top: 3px solid var(--blue); padding-top: 16px; }
+.path div::before { counter-increment: p; content: "Fase " counter(p); font: 600 .78rem var(--display); color: var(--blue); letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+.path p { color: var(--muted); font-size: 1rem; margin-top: 6px; }
+.final { margin-top: 56px; display: grid; gap: 18px; text-align: left; max-width: 62ch; }
+.final .ask { font: 700 clamp(1.6rem, 3.4vw, 2.3rem)/1.2 var(--display); }
+footer { padding: 36px 0 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .msg, .cfill { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">meravigli<b>ä</b> Lab</div>
+    <nav class="nav" aria-label="Capitoli">
+      <a href="#oggi">Oggi</a>
+      <a href="#seconda-te">Una seconda te</a>
+      <a href="#gradualita">Passo dopo passo</a>
+      <a href="#riconosci">Ti riconosci?</a>
+      <a href="#calcolatore">I tuoi numeri</a>
+      <a href="#investimento">L'investimento</a>
+      <a href="#partenza">Si parte</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="chapter"><span>0</span> Il sogno</div>
+      <h1>Oggi guidi 70 persone.<br><span class="blue">Immagina di esserci per tutte, sempre.</span></h1>
+      <p class="lead">Una seconda te, digitale: con la tua voce, le tue conoscenze e il tuo modo di spronare. Segue ogni venditore del tuo network, mentre tu ti dedichi a farlo crescere.</p>
+    </div>
+    <figure class="net-card" style="margin:0">
+      <div class="net-head">
+        <strong style="font-family:var(--display)">Il tuo network</strong>
+        <div class="toggle" role="group" aria-label="Scegli il momento">
+          <button type="button" id="btnNow" aria-pressed="true">Oggi</button>
+          <button type="button" id="btnFuture" aria-pressed="false">Tra 6 mesi</button>
+        </div>
+      </div>
+      <canvas id="net" width="900" height="774" aria-label="Rappresentazione del network: al centro tu, intorno i venditori attivi e quelli fermi"></canvas>
+      <div class="net-stats">
+        <div><strong id="sTot">70</strong><small>persone nel network</small></div>
+        <div><strong id="sAct">45</strong><small>attive e seguite</small></div>
+        <div><strong id="sSleep">25</strong><small>ferme</small></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:#fff"></i>Tu</span>
+        <span><i style="background:var(--blue)"></i>Venditori attivi</span>
+        <span><i style="background:#4A5568"></i>Venditori fermi</span>
+      </div>
+      <figcaption class="note">Scenario illustrativo: metà delle persone ferme che ripartono e 30 nuovi ingressi in 6 mesi.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="oggi">
+  <div class="wrap">
+    <div class="chapter"><span>1</span> Oggi</div>
+    <h2>Hai costruito un network di 70 persone.<br>Ma da sola non puoi seguirle tutte.</h2>
+    <div class="grid3">
+      <div class="card">
+        <div class="num">20-30</div>
+        <h3>persone ferme</h3>
+        <p>Non perché non valgano. Nessuno ha il tempo di seguirle una per una, e piano piano si spengono.</p>
+      </div>
+      <div class="card">
+        <div class="num">1 a 1</div>
+        <h3>un messaggio alla volta</h3>
+        <p>Ogni consiglio, ogni spinta, ogni risposta passa da te. Le ore se ne vanno, e la ricerca di nuove persone resta indietro.</p>
+      </div>
+      <div class="card">
+        <div class="num">?</div>
+        <h3>informazioni che si perdono</h3>
+        <p>C'è il pacchetto che venderebbero volentieri, ma non lo sanno. O non sanno come proporlo con il loro stile.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="seconda-te">
+  <div class="wrap">
+    <div class="chapter"><span>2</span> Una seconda te</div>
+    <h2>Non deleghi a una macchina.<br><span class="blue">Moltiplichi te stessa.</span></h2>
+    <div class="how">
+      <ol class="steps">
+        <li><div><h3>Ha la tua voce</h3><p>Costruiamo la tua personalità digitale: come parli, come sproni, cosa consigli. Sei tu a dirigerla.</p></div></li>
+        <li><div><h3>Conosce ogni venditore</h3><p>Ognuno ha la sua scheda: il suo stile, i suoi punti forti, a che punto è. Così il consiglio è su misura.</p></div></li>
+        <li><div><h3>Ascolta, legge, risponde</h3><p>Ascolta i vocali, legge i PDF e i cataloghi, risponde nel gruppo Telegram che usate già. Giorno e sera.</p></div></li>
+        <li><div><h3>Tu resti sempre presente</h3><p>Sei nella chat, vedi tutto, intervieni quando vuoi. Invece di parlare a una persona alla volta, parli a dieci insieme.</p></div></li>
+      </ol>
+      <div>
+        <div class="phone" aria-label="Esempio di conversazione nella chat del team">
+          <div class="chat-top">
+            <div class="avatar">T</div>
+            <div><strong>La tua assistente</strong><small>gruppo del team · online</small></div>
+          </div>
+          <div class="chat" id="chat">
+            <div class="msg sys">I venditori sanno che sei tu a dirigerla</div>
+            <div class="msg them"><span class="who">Giulia</span>
+              <div class="voice">
+                <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#237DFE"/><path d="M10 8l6 4-6 4z" fill="#fff"/></svg>
+                <div class="wave" aria-hidden="true"><i style="height:8px"></i><i style="height:16px"></i><i style="height:11px"></i><i style="height:20px"></i><i style="height:9px"></i><i style="height:15px"></i><i style="height:22px"></i><i style="height:12px"></i><i style="height:7px"></i><i style="height:17px"></i><i style="height:10px"></i><i style="height:14px"></i></div>
+                <small style="color:var(--muted)">0:42</small>
+              </div>
+            </div>
+            <div class="msg bot"><span class="who">Assistente</span>Ho ascoltato il tuo vocale, Giulia. Per la cliente di cui parli, parti dal pacchetto idratante: è quello che oggi piace di più nelle prime dimostrazioni.
+              <div class="file"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="3" fill="#fff"/><path d="M8 9h8M8 13h8M8 17h5" stroke="#237DFE" stroke-width="2"/></svg>Scheda pacchetto (dal catalogo)</div>
+            </div>
+            <div class="msg bot"><span class="who">Assistente</span>Vuoi che ti prepari il messaggio per invitarla al prossimo incontro, con il tuo stile?</div>
+            <div class="msg them"><span class="who">Giulia</span>Sì, grazie! Così la chiamo stasera.</div>
+            <div class="msg sys">Tu vedi tutto e intervieni quando vuoi</div>
+          </div>
+          <button type="button" class="replay" id="replay">Rivedi la conversazione</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gradualita">
+  <div class="wrap">
+    <div class="chapter"><span>3</span> Passo dopo passo</div>
+    <h2>Il tuo team ci si abitua piano piano.</h2>
+    <p class="prose" style="margin-top:16px">Non cambia niente da un giorno all'altro. Accompagniamo i venditori con piccole azioni, prima semplici e poi sempre più ricche, finché scrivere alla tua assistente diventa naturale.</p>
+    <div class="ramp">
+      <div><div class="bar" style="width:25%"></div><h3>Primi passi</h3><p>Domande semplici, preparate apposta: un consiglio sul catalogo, un messaggio da inviare.</p></div>
+      <div><div class="bar" style="width:50%"></div><h3>Fiducia</h3><p>I venditori iniziano a mandare vocali e dubbi veri. Le risposte arrivano subito.</p></div>
+      <div><div class="bar" style="width:75%"></div><h3>Abitudine</h3><p>La usano per prepararsi agli incontri, scegliere i pacchetti, ritrovare la motivazione.</p></div>
+      <div><div class="bar" style="width:100%"></div><h3>Team che corre</h3><p>Ognuno si sente seguito. Tu guardi l'insieme e ti dedichi a far crescere il network.</p></div>
+    </div>
+    <p class="quote">"È la tua voce, moltiplicata. Sei presente con tutti: di persona e in digitale."</p>
+  </div>
+</section>
+
+<section id="riconosci">
+  <div class="wrap">
+    <div class="chapter"><span>4</span> Ti riconosci?</div>
+    <h2>Tre momenti che le leader di network<br>conoscono bene.</h2>
+    <div class="grid3">
+      <div class="profile">
+        <div class="tag">Ogni euro conta</div>
+        <h3>"In questo periodo conto ogni euro due volte."</h3>
+        <p>È giusto essere attente. Ma un venditore fermo è un guadagno che ogni mese non arriva, anche se non si vede.</p>
+        <p class="turn">La domanda giusta non è quanto costa. È quanto ti costa ogni mese non averlo.</p>
+      </div>
+      <div class="profile">
+        <div class="tag">Chi guida, decide</div>
+        <h3>"Per il mio team decido io, ogni giorno."</h3>
+        <p>Strategie, persone, priorità: le scelte per il network le prendi tu. Il network l'hai costruito tu.</p>
+        <p class="turn">Investire su te stessa è la stessa cosa: una decisione da leader.</p>
+      </div>
+      <div class="profile">
+        <div class="tag">Il tempo passa</div>
+        <h3>"Ci penso un attimo."</h3>
+        <p>Poi arrivano le feste, il lavoro, la vita. E intanto altre persone si fermano, perché nessuno ha avuto il tempo di seguirle.</p>
+        <p class="turn">Il tempo non chiarisce i dubbi. Se ne hai uno, chiariamolo adesso, insieme.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="calcolatore">
+  <div class="wrap">
+    <div class="chapter"><span>5</span> I tuoi numeri</div>
+    <h2>Mettiamo i tuoi numeri, non i nostri.</h2>
+    <p class="prose" style="margin-top:16px">Sposta i cursori con i valori del tuo network. Il calcolo è semplice e trasparente.</p>
+    <div class="calc">
+      <div class="inputs">
+        <div class="field">
+          <label for="inTot">Persone nel network oggi <output id="oTot" for="inTot">70</output></label>
+          <input type="range" id="inTot" min="10" max="200" step="1" value="70">
+        </div>
+        <div class="field">
+          <label for="inSleep">Di queste, quante sono ferme <output id="oSleep" for="inSleep">25</output></label>
+          <input type="range" id="inSleep" min="0" max="70" step="1" value="25">
+        </div>
+        <div class="field">
+          <label for="inPct">Quante di loro ripartono <output id="oPct" for="inPct">50%</output></label>
+          <input type="range" id="inPct" min="0" max="100" step="5" value="50">
+        </div>
+        <div class="field">
+          <label for="inNew">Nuove persone che porti dentro <output id="oNew" for="inNew">15</output></label>
+          <input type="range" id="inNew" min="0" max="100" step="1" value="15">
+          <small>Con il tempo che ti restituisce la tua assistente.</small>
+        </div>
+        <div class="field">
+          <label for="inVal">Quanto ti porta al mese un venditore attivo <output id="oVal" for="inVal">50 €</output></label>
+          <input type="range" id="inVal" min="10" max="300" step="5" value="50">
+          <small>Il numero lo conosci tu: mettiamo il tuo.</small>
+        </div>
+      </div>
+      <div class="results" aria-live="polite">
+        <div>
+          <div class="label">Guadagno in più al mese, a regime</div>
+          <div class="big" id="rMonth">1.125 €</div>
+        </div>
+        <div class="rgrid">
+          <div><strong id="rPeople">+28</strong><small>venditori attivi in più</small></div>
+          <div><strong id="rBreak">3 mesi</strong><small>per ripagare lo sviluppo</small></div>
+        </div>
+        <div class="compare">
+          <div class="crow"><span>Investimento primo anno</span><div class="ctrack"><div class="cfill" id="fCost" style="background:#8FA3C4"></div></div><b id="vCost">4.100 €</b></div>
+          <div class="crow"><span>Guadagno in più in 12 mesi</span><div class="ctrack"><div class="cfill" id="fGain" style="background:var(--blue)"></div></div><b id="vGain">13.500 €</b></div>
+        </div>
+        <p class="fine">Stime a regime calcolate con i valori che scegli tu: non sono una promessa di risultato. Investimento primo anno = 3.500 € + 12 mesi da 50 €.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="investimento">
+  <div class="wrap">
+    <div class="chapter"><span>6</span> L'investimento</div>
+    <h2>Chiaro e semplice. Niente sorprese.</h2>
+    <div class="price">
+      <div class="offer">
+        <div class="pline">
+          <div class="pval">3.500 € <small>una tantum</small></div>
+          <p>Lo sviluppo su misura per te. Le soluzioni standard non reggono il volume del tuo network e la sua crescita.</p>
+        </div>
+        <ul class="incl">
+          <li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#237DFE"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.4" fill="none"/></svg>La tua personalità digitale: voce, conoscenze, stile</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#237DFE"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.4" fill="none"/></svg>Una scheda per ogni venditore del network</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#237DFE"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.4" fill="none"/></svg>Inserimento nei gruppi Telegram del team</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#237DFE"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.4" fill="none"/></svg>Mesi di sviluppo, test e messa a punto graduale</li>
+        </ul>
+        <div class="pline">
+          <div class="pval">50 € <small>al mese</small></div>
+          <p>Tutta la parte tecnica: intelligenza artificiale, server e manutenzione. Non c'è altro da pagare.</p>
+        </div>
+      </div>
+      <div class="perday">
+        <h3>Per dare una misura</h3>
+        <div><strong>50 €</strong><span>lo sviluppo diviso per le 70 persone del tuo network</span></div>
+        <div><strong>meno di 2 € al giorno</strong><span>il canone mensile, per una te sempre presente</span></div>
+        <div><strong id="breakSmall">3 mesi</strong><span>per ripagare lo sviluppo, con i numeri del calcolatore</span></div>
+      </div>
+    </div>
+    <div class="deadline">
+      <div>
+        <h3>Offerta valida fino al 30 novembre 2026</h3>
+        <p>Lo sviluppo personalizzato richiede mesi di lavoro: blocchiamo queste condizioni solo per chi parte entro fine mese.</p>
+      </div>
+      <div class="count" id="count" aria-live="polite">
+        <div><strong id="cD">7</strong><small>giorni</small></div>
+        <div><strong id="cH">13</strong><small>ore</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="partenza">
+  <div class="wrap">
+    <div class="chapter"><span>7</span> Si parte</div>
+    <h2>Cosa succede dopo il sì.</h2>
+    <div class="path">
+      <div><h3>Ti ascoltiamo</h3><p>Raccogliamo la tua voce, i tuoi messaggi, i materiali e i cataloghi che usi.</p></div>
+      <div><h3>Costruiamo la seconda te</h3><p>Personalità digitale, schede dei venditori, prove interne finché suona come te.</p></div>
+      <div><h3>Primi venditori</h3><p>Partiamo con un gruppo piccolo e azioni semplici. Correggiamo insieme.</p></div>
+      <div><h3>Tutto il network</h3><p>Allarghiamo a tutto il team e aggiorniamo man mano che il network cresce.</p></div>
+    </div>
+    <div class="final">
+      <p class="ask">Hai costruito tutto questo da sola.<br><span class="blue">Adesso ti meriti qualcuno che lavori con te.</span></p>
+      <p class="prose">Se hai un dubbio, dimmelo adesso: lo chiariamo insieme. Se sei convinta, partiamo.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">meravigliä Lab Lecco · Proposta riservata · Condizioni valide fino al 30 novembre 2026</div>
+</footer>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Network animation ---------- */
+  var cv = document.getElementById('net');
+  var ctx = cv.getContext('2d');
+  var W = cv.width, H = cv.height, cx = W / 2, cy = H / 2;
+  var seed = 7;
+  function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+
+  // 70 existing + 30 new nodes
+  var nodes = [];
+  var golden = Math.PI * (3 - Math.sqrt(5));
+  for (var i = 0; i < 100; i++) {
+    var r = 120 + Math.sqrt((i + 0.5) / 100) * 230 + (rnd() - 0.5) * 26;
+    var a = i * golden + rnd() * 0.3;
+    nodes.push({ x: cx + Math.cos(a) * r * 1.08, y: cy + Math.sin(a) * r * 0.9, ph: rnd() * Math.PI * 2 });
+  }
+  // shuffle roles: indexes for existing vs new
+  var idx = nodes.map(function (_, i) { return i; });
+  for (var k = idx.length - 1; k > 0; k--) { var j = Math.floor(rnd() * (k + 1)); var t = idx[k]; idx[k] = idx[j]; idx[j] = t; }
+  idx.forEach(function (n, order) {
+    var nd = nodes[n];
+    if (order < 70) {
+      nd.isNew = false;
+      nd.sleepNow = order < 25;           // 25 fermi oggi
+      nd.wakes = order < 12;              // 12 di questi ripartono
+    } else {
+      nd.isNew = true;
+      nd.sleepNow = false; nd.wakes = false;
+      nd.delay = (order - 70) / 30;
+    }
+  });
+
+  var target = 0, prog = 0, pulses = [];
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function ease(t) { return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+  function nodeState(nd, p) {
+    // returns {alpha, active(0..1)}
+    if (nd.isNew) {
+      var t = Math.max(0, Math.min(1, (p - nd.delay * 0.6) / 0.4));
+      return { alpha: ease(t), act: 1 };
+    }
+    if (nd.sleepNow) {
+      if (nd.wakes) { var w = Math.max(0, Math.min(1, (p - 0.1) / 0.5)); return { alpha: 1, act: ease(w) }; }
+      return { alpha: 1, act: 0 };
+    }
+    return { alpha: 1, act: 1 };
+  }
+
+  function draw(time) {
+    ctx.clearRect(0, 0, W, H);
+    var p = prog;
+    // links
+    nodes.forEach(function (nd) {
+      var s = nodeState(nd, p);
+      if (s.alpha <= 0) return;
+      var la = s.alpha * (0.08 + 0.22 * s.act);
+      ctx.strokeStyle = s.act > 0.5 ? 'rgba(35,125,254,' + la + ')' : 'rgba(140,150,170,' + (s.alpha * 0.08) + ')';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nd.x, nd.y); ctx.stroke();
+    });
+    // pulses travelling from center to active nodes
+    if (!reduce) {
+      pulses.forEach(function (pl) {
+        var nd = nodes[pl.n];
+        var x = lerp(cx, nd.x, pl.t), y = lerp(cy, nd.y, pl.t);
+        ctx.fillStyle = 'rgba(255,255,255,' + (1 - pl.t) + ')';
+        ctx.beginPath(); ctx.arc(x, y, 3.2, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+    // nodes
+    nodes.forEach(function (nd) {
+      var s = nodeState(nd, p);
+      if (s.alpha <= 0) return;
+      var breathe = reduce ? 0 : Math.sin(time / 700 + nd.ph) * 1.2 * s.act;
+      var rad = lerp(6.5, 9.5, s.act) + breathe;
+      if (s.act > 0.05) {
+        ctx.fillStyle = 'rgba(35,125,254,' + (0.18 * s.act * s.alpha) + ')';
+        ctx.beginPath(); ctx.arc(nd.x, nd.y, rad + 7, 0, Math.PI * 2); ctx.fill();
+      }
+      var rC = Math.round(lerp(74, 35, s.act)), gC = Math.round(lerp(85, 125, s.act)), bC = Math.round(lerp(104, 254, s.act));
+      ctx.fillStyle = 'rgba(' + rC + ',' + gC + ',' + bC + ',' + s.alpha + ')';
+      ctx.beginPath(); ctx.arc(nd.x, nd.y, rad, 0, Math.PI * 2); ctx.fill();
+    });
+    // center: tu
+    ctx.fillStyle = 'rgba(35,125,254,.25)';
+    ctx.beginPath(); ctx.arc(cx, cy, 46 + (reduce ? 0 : Math.sin(time / 900) * 3), 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(cx, cy, 34, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#0B1220';
+    ctx.font = '700 26px Poppins, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('Tu', cx, cy + 1);
+  }
+
+  var sTot = document.getElementById('sTot'), sAct = document.getElementById('sAct'), sSleep = document.getElementById('sSleep');
+  function updateStats() {
+    var tot = 0, act = 0, sl = 0;
+    nodes.forEach(function (nd) {
+      var s = nodeState(nd, prog);
+      if (s.alpha > 0.5) { tot++; if (s.act > 0.5) act++; else sl++; }
+    });
+    sTot.textContent = tot; sAct.textContent = act; sSleep.textContent = sl;
+  }
+
+  var last = 0;
+  function frame(time) {
+    var dt = Math.min(64, time - last || 16); last = time;
+    if (prog !== target) {
+      var step = dt / 3200;
+      prog = target > prog ? Math.min(target, prog + step) : Math.max(target, prog - step * 1.6);
+      updateStats();
+    }
+    if (!reduce) {
+      if (Math.random() < 0.18) {
+        var cand = Math.floor(Math.random() * nodes.length);
+        var s = nodeState(nodes[cand], prog);
+        if (s.alpha > 0.8 && s.act > 0.8) pulses.push({ n: cand, t: 0 });
+      }
+      pulses.forEach(function (pl) { pl.t += dt / 1400; });
+      pulses = pulses.filter(function (pl) { return pl.t < 1; });
+    }
+    draw(time);
+    if (!reduce || prog !== target) requestAnimationFrame(frame);
+  }
+
+  var bNow = document.getElementById('btnNow'), bFut = document.getElementById('btnFuture');
+  function setTarget(v) {
+    target = v;
+    bNow.setAttribute('aria-pressed', v === 0 ? 'true' : 'false');
+    bFut.setAttribute('aria-pressed', v === 1 ? 'true' : 'false');
+    if (reduce) { prog = v; updateStats(); draw(0); }
+    else requestAnimationFrame(frame);
+  }
+  bNow.addEventListener('click', function () { setTarget(0); });
+  bFut.addEventListener('click', function () { setTarget(1); });
+
+  draw(0); updateStats();
+  if (!reduce) {
+    requestAnimationFrame(frame);
+    setTimeout(function () { setTarget(1); }, 1600);
+  }
+
+  /* ---------- Chat replay ---------- */
+  var chat = document.getElementById('chat');
+  var msgs = Array.prototype.slice.call(chat.querySelectorAll('.msg'));
+  function play() {
+    if (reduce) return;
+    chat.classList.add('playing');
+    msgs.forEach(function (m) { m.classList.add('hide'); });
+    msgs.forEach(function (m, i) { setTimeout(function () { m.classList.remove('hide'); }, 300 + i * 900); });
+  }
+  document.getElementById('replay').addEventListener('click', play);
+
+  /* ---------- Calculator ---------- */
+  var DEV = 3500, FEE = 50;
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) { return Math.round(n).toLocaleString('it-IT') + ' €'; };
+  function calc() {
+    var tot = +$('inTot').value;
+    var sleepEl = $('inSleep');
+    sleepEl.max = tot;
+    if (+sleepEl.value > tot) sleepEl.value = tot;
+    var sleep = +sleepEl.value, pct = +$('inPct').value, nw = +$('inNew').value, val = +$('inVal').value;
+    $('oTot').textContent = tot; $('oSleep').textContent = sleep; $('oPct').textContent = pct + '%';
+    $('oNew').textContent = nw; $('oVal').textContent = val + ' €';
+    var people = Math.round(sleep * pct / 100) + nw;
+    var month = people * val;
+    var year = month * 12;
+    var cost = DEV + FEE * 12;
+    $('rMonth').textContent = fmt(month);
+    $('rPeople').textContent = '+' + people;
+    var net = month - FEE, bt;
+    if (net <= 0) bt = 'oltre 12 mesi';
+    else { var m = Math.ceil(DEV / net); bt = m > 24 ? 'oltre 24 mesi' : (m === 1 ? '1 mese' : m + ' mesi'); }
+    $('rBreak').textContent = bt; $('breakSmall').textContent = bt;
+    var mx = Math.max(cost, year, 1);
+    $('fCost').style.width = (cost / mx * 100) + '%';
+    $('fGain').style.width = (year / mx * 100) + '%';
+    $('vCost').textContent = fmt(cost); $('vGain').textContent = fmt(year);
+  }
+  ['inTot', 'inSleep', 'inPct', 'inNew', 'inVal'].forEach(function (id) { $(id).addEventListener('input', calc); });
+  calc();
+
+  /* ---------- Countdown ---------- */
+  var end = new Date(2026, 10, 30, 23, 59, 59); // 30 novembre 2026, ora locale
+  function tick() {
+    var ms = end - new Date();
+    var box = $('count');
+    if (ms <= 0) { box.innerHTML = '<div><strong>Scaduta</strong><small>offerta</small></div>'; return; }
+    var d = Math.floor(ms / 86400000), h = Math.floor((ms % 86400000) / 3600000);
+    $('cD').textContent = d; $('cH').textContent = h;
+  }
+  tick(); setInterval(tick, 60000);
+})();
+</script>
+</body>
+</html>
